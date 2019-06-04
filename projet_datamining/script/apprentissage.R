@@ -9,41 +9,41 @@ library('tm')
 library('stringr')
 
 #Les arguments :
-#   app             data frame contenant :    $text     les textes de l'échantillon d'apprentissage
-#                                             $note     les notes attribuées au texte :-1 | 0 | 1
+#   app             data frame contenant :    $text     les textes de l'echantillon d'apprentissage
+#                                             $note     les notes attribuees au texte :-1 | 0 | 1
 #
-#   test            data frame, NULL par defaut. Echantillon test de la même forme que l'échantillon d'apprentissage :    $text   $note
+#   test            data frame, NULL par defaut. Echantillon test de la meme forme que l'echantillon d'apprentissage :    $text   $note
 #
-#   dictionnaire    char vector, NULL par défaut. Dictionnaire de la langue utilisée
+#   dictionnaire    char vector, NULL par defaut. Dictionnaire de la langue utilisee
 #
-#   motimp          char vector, NULL par défaut. Liste des noms propres où mots important inconnus du dictionnaire et qui ne doivent pas être modifiés
+#   motimp          char vector, NULL par defaut. Liste des noms propres ou mots important inconnus du dictionnaire et qui ne doivent pas etre modifies
 #
-#   seuilTot        numeric, 3.4 par defaut. Fréquence minimale d'apparition d'un mot pour etre ajouté au lexique
+#   seuilTot        numeric, 3.4 par defaut. Frequence minimale d'apparition d'un mot pour etre ajoute au lexique
 #   
-#   seuilIntra      numeric, 64 par défaut. Fréquence miniale d'appartition d'un mot dans sa catégorie pour etre ajouté au léxique
+#   seuilIntra      numeric, 64 par defaut. Frequence miniale d'appartition d'un mot dans sa categorie pour etre ajoute au lexique
 #
-#   seuilNeutre     numeric, 0 par défaut. Score en dessous duquel un texte est classé comme neutre
+#   seuilNeutre     numeric, 0 par defaut. Score en dessous duquel un texte est classe comme neutre
 
 
 # En sortie : une liste de tables
 #   sortie[[1]] :   le lexique contenant :    $mots
-#                                             $poids          +1/-1 x la fréquence du mot dans sa catégorie
+#                                             $poids          +1/-1 x la Frequence du mot dans sa categorie
 #
-#   sortie[[2]] :   la table des fréquences de tous les mot contenant $mots $tot $neg $pos
+#   sortie[[2]] :   la table des Frequences de tous les mot contenant $mots $tot $neg $pos
 #
-#   sortie[[3]] :   l'echantillon test noté contenant :
+#   sortie[[3]] :   l'echantillon test note contenant :
 #                                             $text           les textes
-#                                             $note           la attribué à priori : -1 | 0 | 1
-#                                             $MatchPos       le nombre de mots positifs trouvés dans le texte
-#                                             $MatchNeg       le nombre de mots négatifs trouvés dans le texte
-#                                             $scoreCalcule   le score calculé)
-#                                             $noteApost      la classification évaluée a posteriori :   -1 | 0 | 1
+#                                             $note           la attribue a priori : -1 | 0 | 1
+#                                             $MatchPos       le nombre de mots positifs trouves dans le texte
+#                                             $MatchNeg       le nombre de mots negatifs trouves dans le texte
+#                                             $scoreCalcule   le score calcule)
+#                                             $noteApost      la classification evaluee a posteriori :   -1 | 0 | 1
 
 
 
 apprentissage <- function(app , test=NULL, dictionnaire=NULL, motimp=NULL, seuilTot=3.4, seuilIntra=64, seuilNeutre=0){
   #########################################
-  ##### Quelques vérifications ############
+  ##### Quelques verifications ############
   #########################################
   
   if(is.null(app$text)){
@@ -73,40 +73,40 @@ apprentissage <- function(app , test=NULL, dictionnaire=NULL, motimp=NULL, seuil
     return(text)
   }
   
-  # première function de nettoyage 
+  # premiere function de nettoyage 
   cleanCorpus <- function(corpus){
-    #ces premières fonctions s'appliquent à des corpus de documents
+    #ces premieres fonctions s'appliquent a des corpus de documents
     corpus <- tm_map(corpus, content_transformer(gsub), pattern = "(f|ht)(tp)(s?)(://)(.*)[.|/](.*)" , replacement="") # supprime les URL
     corpus <- tm_map(corpus, content_transformer(gsub), pattern = "(f|ht)(tp)(s?)(*)" , replacement="")
     corpus <- tm_map(corpus, content_transformer(gsub), pattern = "t'|l'|d'|j'|m'|c'|n'|N'|T'|L'|D'|'|c'|n'|qu'|Qu'", replacement ="") # supprime les approstrophes
-    corpus <- tm_map(corpus, content_transformer(gsub), pattern = "RT|via|Retweeted", replacement ="") # retire des mots spécifiques à twitter
+    corpus <- tm_map(corpus, content_transformer(gsub), pattern = "RT|via|Retweeted", replacement ="") # retire des mots specifiques a twitter
     corpus <- tm_map(corpus, content_transformer(gsub), pattern = "_", replacement =" ") # retire les underscore
-    corpus <- tm_map(corpus, content_transformer(gsub), pattern = "à", replacement ='a') #        Retire les accents
-    corpus <- tm_map(corpus, content_transformer(gsub), pattern = "é|è|ê|ë", replacement = 'e')
-    corpus <- tm_map(corpus, content_transformer(gsub), pattern = "ï|î", replacement ='i')
-    corpus <- tm_map(corpus, content_transformer(gsub), pattern = 'ô|ö', replacement = 'o')
-    corpus <- tm_map(corpus, content_transformer(gsub), pattern = 'ù', replacement = 'u')
-    corpus <- tm_map(corpus, content_transformer(gsub), pattern = "([[:lower:]])([[:upper:]])", replacement = "\\1 \\2") # sépare des deux mots s'il y a une majuscule
+    corpus <- tm_map(corpus, content_transformer(gsub), pattern = "Ã ", replacement ='a') #        Retire les accents
+    corpus <- tm_map(corpus, content_transformer(gsub), pattern = "Ã©|Ã¨|Ãª|Ã«", replacement = 'e')
+    corpus <- tm_map(corpus, content_transformer(gsub), pattern = "Ã®|Ã¯", replacement ='i')
+    corpus <- tm_map(corpus, content_transformer(gsub), pattern = 'Ã¶|Ã´', replacement = 'o')
+    corpus <- tm_map(corpus, content_transformer(gsub), pattern = 'Ã¹', replacement = 'u')
+    corpus <- tm_map(corpus, content_transformer(gsub), pattern = "([[:lower:]])([[:upper:]])", replacement = "\\1 \\2") # separe des deux mots s'il y a une majuscule
     corpus <- tm_map(corpus, removeWords, stopwords("french")) # supprimes les mots sans importance (le la donc quand...)
     corpus <- tm_map(corpus, removeNumbers) # supprime les chiffres
     corpus <- tm_map(corpus, removePunctuation) # supprime la ponctuation
     corpus <- tm_map(corpus, content_transformer(gsub), pattern = "@", replacement="") #supprime les @
     corpus <- tm_map(corpus, content_transformer(gsub), pattern = "#", replacement="") # supprime les #
     corpus <- tm_map(corpus, stripWhitespace) # supprime les espaces superflus
-    corpus <- tm_map(corpus, content_transformer(gsub), pattern = "([[:lower:]])([[:upper:]])", replacement = "\\1 \\2") # sépare des deux mots s'il y a une majuscule
+    corpus <- tm_map(corpus, content_transformer(gsub), pattern = "([[:lower:]])([[:upper:]])", replacement = "\\1 \\2") # separe des deux mots s'il y a une majuscule
     corpus <- tm_map(corpus, tolower) # met tout en majuscules
     return(corpus)
   }    
   
-  # Correction affinée mot à mot, suppression des mots de moins de 3 lettres
+  # Correction affinee mot a mot, suppression des mots de moins de 3 lettres
   corrigeMots <- function(chain, dictionnaire=NULL, wordbank=NULL){
-    if(is.na(chain)){return()} #pour éviter les erreurs, on évacue les éventuelles chaines vides
+    if(is.na(chain)){return()} #pour eviter les erreurs, on evacue les eventuelles chaines vides
     n= str_length(chain)
     if (n<4){return()}
     if(chain %in% dictionnaire){#on regarde d'abord s'il est dans le dictionnaire
       return(chain)
     }
-    for(mot in wordbank){#on regarde s'il ne s'agit pas de l'un des mots important noyé dans une chaine. Ex FillonPresident -> Fillon
+    for(mot in wordbank){#on regarde s'il ne s'agit pas de l'un des mots important noye dans une chaine. Ex FillonPresident -> Fillon
       if (!is.na(str_extract(chain, mot))){
         return(mot)
       }
@@ -160,7 +160,7 @@ apprentissage <- function(app , test=NULL, dictionnaire=NULL, motimp=NULL, seuil
     return(liste_mots)
   }  
   
-  # Fonction récursive qui Classe les tweets en positif, neutre, négatif en fonction de leur score calculé
+  # Fonction rÃ©cursive qui Classe les tweets en positif, neutre, negatif en fonction de leur score calcule
   getnote     <- function(x){
     if(is.null(x)){return()}
     if(is.na(x[1])){return()}
@@ -176,7 +176,7 @@ apprentissage <- function(app , test=NULL, dictionnaire=NULL, motimp=NULL, seuil
     return(c(0,getnote(x[2:n])))
   }
   
-  #on met en minuscule et on enlève les accents du dictionnaire et des Mots Importants
+  #on met en minuscule et on enleve les accents du dictionnaire et des Mots Importants
   dictionnaire=unique(tolower(Unaccent(dictionnaire)))
   motimp=tolower(Unaccent(motimp)) 
   
@@ -184,21 +184,21 @@ apprentissage <- function(app , test=NULL, dictionnaire=NULL, motimp=NULL, seuil
   #### construction du dictionnaire ######
   ########################################
   
-  # lex est un vecteur contenant tous les mots corrigés du corpus.
-  # c'est une étape préliminaire avant d'étudier quels sont les mots positifs et négatifs
+  # lex est un vecteur contenant tous les mots corriges du corpus.
+  # c'est une etape preliminaire avant d'etudier quels sont les mots positifs et negatifs
   # Les textes passent d'abord dans la fonction cleancorpus
-  # puis dans la fonction WordCorpus qui extrait les mots et les corrige en faisant appel à CorrigeMots
+  # puis dans la fonction WordCorpus qui extrait les mots et les corrige en faisant appel a CorrigeMots
   lex=WordsCorpus(cleanCorpus(Corpus(VectorSource(app$text))),dictionnaire = dictionnaire, wordbank = motimp)
-  lex=unique(lex) # on extrait tous les mots corrigé et supprime les doublons
+  lex=unique(lex) # on extrait tous les mots corrige et supprime les doublons
   
-  # On construit la freqtab, c'est une étape intermédiaire
+  # On construit la freqtab, c'est une etape intermediaire
   # Cette table contiendra :    $mots     la liste de tous les mots
-  #                             $tot      fréquence totale du mot dans les textes
-  #                             $neg      fréquence du mot dans les textes négatifs
-  #                             $pos      fréquence du mot dans les textes positifs
+  #                             $tot      Frequence totale du mot dans les textes
+  #                             $neg      Frequence du mot dans les textes negatifs
+  #                             $pos      Frequence du mot dans les textes positifs
   uliste=app$text[app$note!=0] ## on extrait l'ensemble des textes non neutres (les neutres ne doivent pas biaiser le dictionnaire)
   u=length(uliste)
-  nliste=app$text[app$note<0]  ## on construit une liste de textes négatifs
+  nliste=app$text[app$note<0]  ## on construit une liste de textes negatifs
   n=length(nliste)
   pliste=app$text[app$note>0]  ## on construit une liste de textes positifs
   p=length(pliste)
@@ -214,7 +214,7 @@ apprentissage <- function(app , test=NULL, dictionnaire=NULL, motimp=NULL, seuil
   
   # Enfin on construit la table Lexique 
   # Cette table contient :      $mots     les mots choisis pour apparaitre dans le lexique
-  #                             $poids    le poids du mot (-1|1 x frequence du mot dans sa catégorie)
+  #                             $poids    le poids du mot (-1|1 x frequence du mot dans sa categorie)
   lexMots=c(as.character(freqtab$mots[(freqtab$tot>seuilTot)&(freqtab$neg>seuilIntra)]),as.character(freqtab$mots[(freqtab$tot>seuilTot)&(freqtab$pos>seuilIntra)]))
   lexPoids=c(-freqtab$neg[(freqtab$tot>seuilTot)&(freqtab$neg>seuilIntra)],freqtab$pos[(freqtab$tot>seuilTot)&(freqtab$pos>seuilIntra)])
   Lexique=data.frame(mots=lexMots,poids=lexPoids, stringsAsFactors=F)
@@ -223,7 +223,7 @@ apprentissage <- function(app , test=NULL, dictionnaire=NULL, motimp=NULL, seuil
     return(list(Lexique,freqtab))
   }
   #######################################
-  #### application à l'échantillon ######
+  #### application a l'echantillon ######
   ############### test ##################
   #######################################
 
@@ -231,19 +231,19 @@ apprentissage <- function(app , test=NULL, dictionnaire=NULL, motimp=NULL, seuil
   N=length(textes)
   score=NULL  #Contiendra les scores des textes
   PM=NULL     #Contiendra le nombre de match positifs
-  NM=NULL     #Contiendra le nombre de match négatifs
+  NM=NULL     #Contiendra le nombre de match negatifs
   for(j in 1:N){
-    phrase=textes[j]  ## On travaillera sur chaque texte de l'échantillon
-    mots=unlist(str_split(phrase, ' ')) ## on extrait les mots du j° texte
-    motcor=NULL # Contiendra les mots corrigés du texte
+    phrase=textes[j]  ## On travaillera sur chaque texte de l'echantillon
+    mots=unlist(str_split(phrase, ' ')) ## on extrait les mots du texte
+    motcor=NULL # Contiendra les mots corriges du texte
     for(mot in mots){
       mot=corrigeMots(mot, dictionnaire = dictionnaire, wordbank = motimp)  # on corrige le mot 
-      motcor=c(motcor,mot)                                                  # et on le place de notre liste de mots corrigés
+      motcor=c(motcor,mot)                                                  # et on le place de notre liste de mots corriges
     }
-    posmatch=length(Lexique$mots[(Lexique$poids>0)&(Lexique$mots %in% motcor)]) # On compte les mots du lexique trouvés dans le tweet
+    posmatch=length(Lexique$mots[(Lexique$poids>0)&(Lexique$mots %in% motcor)]) # On compte les mots du lexique trouves dans le tweet
     negmatch=length(Lexique$mots[(Lexique$poids<0)&(Lexique$mots %in% motcor)])
     
-    sc=sum(Lexique$poids[Lexique$mots %in% motcor])                             # le score est la somme du poids de chaque mot matché
+    sc=sum(Lexique$poids[Lexique$mots %in% motcor])                             # le score est la somme du poids de chaque mot matche
     score=c(score,sc) ; PM=c(PM, posmatch) ; NM=c(NM,negmatch) ## on sauvegarde les mesures
   }
   # On construit la table "test" finale
